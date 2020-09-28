@@ -10,7 +10,6 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { CoffeeComponent } from './coffee/coffee.component';
 import { CoffeesComponent } from './coffees/coffees.component';
-import { LoginComponent } from './login/login.component';
 import { AddComponent } from './add/add.component';
 
 @NgModule({
@@ -19,7 +18,6 @@ import { AddComponent } from './add/add.component';
     HomeComponent,
     CoffeeComponent,
     CoffeesComponent,
-    LoginComponent,
     AddComponent
   ],
   imports: [
