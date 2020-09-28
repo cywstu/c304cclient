@@ -1,0 +1,34 @@
+<div align="center">
+    <h1>Welcome!</h1>
+    <p>We offer the best coffee in the world!</p>
+    <p>Sit back, enjoy our coffee, and have a nice day!</p>
+</div>
+
+<div class="play-container">
+    <p>you've clicked <span (click)="countClick()">THIS</span> {{ clickCounter }} times.</p>
+</div>
+
+<div class="play-container">
+    <p>
+        <strong>you said: </strong> {{ name }}
+    </p>
+</div>
+
+<div class="play-container">
+    hey {{ coffees }}
+    <ul *ngFor="let c of coffees">
+        <li>{{ c.name }}</li>
+    </ul>
+</div>
+
+<div class="play-container">
+    <h1>http results</h1>
+    <br />
+    <span *ngIf="result">
+        {{ result }}
+        <a href="{{result.website_url}}">website</a>
+    </span>
+    ok
+</div>
+
+<button (click)="onAddCoffee(coffee)" class="addCoffeeButton">Add Coffee!</button>

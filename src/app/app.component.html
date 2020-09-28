@@ -1,16 +1,46 @@
 
 <header>
   <div class="container">
-    <a href="#" class="logo">C304Coffee</a>
+    <a href="/" class="logo">C304Coffee</a>
     <nav>
       <ul>
-        <li><a href="#" routerLink="/">Home</a></li>
-        <li><a href="#" routerLink="/coffee">Coffee</a></li>
+        <li><a href="/" routerLink="/">Home</a></li>
+        <li><a href="/coffees" routerLink="/coffees">Coffees</a></li>
+        <li><span (click)="open(content)">Login</span></li>
       </ul>
     </nav>
   </div>
 </header>
 
+<div class="banner">
+  <img src="assets/images/banner.jpg">
+</div>
+
 <div class="container">
   <router-outlet></router-outlet>
 </div>
+
+
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Login</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+          <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  <div class="modal-body">
+      <form>
+          <div class="form-group">
+              <label>Username</label>
+              <input id="inputUsername" class="form-control" placeholder="username" name="username">
+              <br />
+              <label>Password</label>
+              <input id="inputPassword" class="form-control" placeholder="password" name="password">
+          </div>
+      </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Login</button>
+  </div>
+</ng-template>
