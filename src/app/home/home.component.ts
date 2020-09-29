@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { HttpService } from "../http.service";
 import { Coffee } from "../models/Coffee";
 import { MethodCall } from '@angular/compiler';
@@ -19,6 +19,8 @@ export class HomeComponent implements OnInit {
     desc: "this is coffee1",
     addDate: new Date()
   }
+
+  @Input() message: string;
 
   coffees: Coffee[] = [this.coffee, this.coffee, this.coffee];
 

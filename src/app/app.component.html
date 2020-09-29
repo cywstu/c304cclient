@@ -25,7 +25,7 @@
 <ng-template #content let-modal>
   <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">Login</h4>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <button type="button" class="close" aria-label="Close" (click)="closeModal()">
           <span aria-hidden="true">&times;</span>
       </button>
   </div>
@@ -33,14 +33,17 @@
       <form>
           <div class="form-group">
               <label>Username</label>
-              <input id="inputUsername" class="form-control" placeholder="username" name="username">
+              <input class="form-control" placeholder="username" name="username" [(ngModel)]="username" [ng-change]="">
               <br />
               <label>Password</label>
-              <input id="inputPassword" class="form-control" placeholder="password" name="password">
+              <input class="form-control" placeholder="password" name="password" [(ngModel)]="password">
           </div>
       </form>
+      <div *ngIf="modalAlertShow" class="modalAlert">
+        {{ modalAlertMessage }}
+      </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Login</button>
+    <button type="button" class="btn btn-outline-dark" (click)="submitForm()">Login</button>
   </div>
 </ng-template>
