@@ -11,6 +11,7 @@ import { HomeComponent } from './home/home.component';
 import { CoffeeComponent } from './coffee/coffee.component';
 import { CoffeesComponent } from './coffees/coffees.component';
 import { AddComponent } from './add/add.component';
+import { DataService } from "./DataService";
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import { AddComponent } from './add/add.component';
     NgbModule,
     NgbModalModule
   ],
-  providers: [],
+  providers: [DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

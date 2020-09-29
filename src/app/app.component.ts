@@ -58,7 +58,7 @@ export class AppComponent {
         //console.log(this.dataService.getToken());
         this.modalRef.close();
         this.showAlert("Login success!");
-        setTimeout(() => window.location.reload(), 2000);
+        //setTimeout(() => window.location.reload(), 2000);
       }
     });
   }

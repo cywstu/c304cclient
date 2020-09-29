@@ -5,56 +5,79 @@ import { Observable } from "rxjs";
 import { Coffee } from "./models/Coffee";
 import { User } from "./models/User";
 import { TokenMessage } from "./models/TokenMessage";
+import { SimpleMessage } from "./models/SimpleMessage";
+
+import { DataService } from "./DataService";
 
 const httpOptions = {
   headers: new HttpHeaders({
     "Content-Type": "application/json"
   })
-}
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
 
-  serverUrl:string = "https://c304coffee.herokuapp.com";
+  //serverUrl:string = "https://c304coffee.herokuapp.com";
+  serverUrl:string = "http://127.0.0.1:3000";
   coffeesUrl:string = this.serverUrl + "/coffees";
   addUrl:string = this.serverUrl + "/add";
   editUrl:string = this.serverUrl + "/edit";
   removeUrl:string = this.serverUrl + "/remove";
   loginUrl:string = this.serverUrl + "/login";
-  //coffeeUrl:string = ;
 
-  constructor(private http: HttpClient) { }
-
-  method(){
-    return this.coffeesUrl;
-  }
+  constructor(private http: HttpClient, private dataService: DataService) { }
 
   getCoffees(): Observable<Coffee[]>{
     return this.http.get<Coffee[]>(this.coffeesUrl, httpOptions);
-  }
-
-  getCoffee(){
-
   }
 
   login(user: User): Observable<TokenMessage>{
     return this.http.post<TokenMessage>(this.loginUrl, user, httpOptions);
   }
 
-  addCoffee(coffee: Coffee){
-    return this.http.post(this.addUrl, coffee, httpOptions);
+  addCoffee(coffee: Coffee, file: File): Observable<SimpleMessage>{
+    const tempOptions = {
+      headers: new HttpHeaders({
+        "Authorization": this.dataService.getToken()
+      })
+    };
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("name", coffee.name);
+    formData.append("desc", coffee.desc);
+
+    console.log(tempOptions);
+    return this.http.post<SimpleMessage>(this.addUrl, formData, tempOptions);
   }
 
-  removeCoffee(coffee: Coffee){
-    const url = this.removeUrl + "/" + coffee._id;
-    return this.http.delete(url, httpOptions);
+  editCoffee(coffee: Coffee, file: File): Observable<SimpleMessage>{
+    const tempOptions = {
+      headers: new HttpHeaders({
+        "Authorization": this.dataService.getToken()
+      })
+    };
+
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("name", coffee.name);
+    formData.append("desc", coffee.desc);
+
+    const url = this.editUrl + "/" + coffee._id;
+    return this.http.put<SimpleMessage>(url, formData, tempOptions);
   }
 
-  editCoffee(coffee: Coffee){
-    const url = this.removeUrl + "/" + coffee._id;
-    return this.http.put(url, coffee, httpOptions);
+  removeCoffee(id: string): Observable<SimpleMessage>{
+    const tempOptions = {
+      headers: new HttpHeaders({
+        "Authorization": this.dataService.getToken()
+      })
+    };
+
+    const url = this.removeUrl + "/" + id;
+    return this.http.delete<SimpleMessage>(url, tempOptions);
   }
 
 }

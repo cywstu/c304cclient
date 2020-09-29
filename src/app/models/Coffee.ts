@@ -3,5 +3,4 @@ export class Coffee{
     name: string;
     desc: string;
     addDate: Date;
-    image: File;
 }

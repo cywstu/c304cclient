@@ -3,6 +3,7 @@ import { Coffee } from "../models/Coffee";
 import { HttpService } from "../http.service";
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from "../DataService";
+import { SimpleMessage } from '../models/SimpleMessage';
 
 @Component({
   selector: 'app-coffees',
@@ -40,6 +41,8 @@ export class CoffeesComponent implements OnInit {
   ngOnInit(): void {
     this.getCoffee();
     this.isLoggedIn = this.dataService.isLoggedIn();
+    //console.log(this.dataService.getToken());
+    //this.showAlert(this.dataService.getToken());
   }
 
   //===========================================
@@ -57,36 +60,59 @@ export class CoffeesComponent implements OnInit {
       _id: "",
       name: this.name,
       desc: this.desc,
-      addDate: new Date(),
-      image: this.imageUrl
+      addDate: new Date()
     };
-    this.alertMessage = newCoffee.name;
+    //this.alertMessage = newCoffee.name;
 
     console.log("prepare to add");
-    this.httpService.addCoffee(newCoffee).subscribe(res =>{
-      this.result = res;
-      this.showModalAlert("result: " + this.result.message);
-      //clean up
-      console.log("finish adding");
-      console.log("res: " + this.result);
-      console.log("res.message: " + this.result.message);
-      this.closeModal();
-      setTimeout(() => window.location.reload(), 2000);
+    this.httpService.addCoffee(newCoffee, this.image).subscribe(res =>{
+      if(res && res.message === "coffee added"){
+        console.log("result: " + res.message)
+        this.closeModal();
+        this.showAlert("Coffee added!");
+      }else{
+        this.showModalAlert("Error: failed to add coffee!");
+      }
+      //setTimeout(() => window.location.reload(), 2000);
     });
     
   }
 
   editCoffee(){
-    //
-    this.closeModal();
-    setTimeout(() => window.location.reload(), 2000);
+    //stuff
+    const newCoffee: Coffee = {
+      _id: this.id,
+      name: this.name,
+      desc: this.desc,
+      addDate: new Date()
+    };
+    //this.alertMessage = newCoffee.name;
+
+    console.log("prepare to edit");
+    this.httpService.editCoffee(newCoffee, this.image).subscribe(res =>{
+      if(res && res.message === "coffee edited"){
+        console.log("result: " + res.message)
+        this.closeModal();
+        this.showAlert("Coffee edited!");
+      }else{
+        this.showModalAlert("Error: failed to add coffee!");
+      }
+      //setTimeout(() => window.location.reload(), 2000);
+    });
   }
 
   removeCoffee(){
-    this.showAlert("Coffee: " + this.id + " has been removed!");
-    setTimeout(() => window.location.reload(), 2000);
+    this.showAlert("Removing coffee, lease wait...");
+    this.httpService.removeCoffee(this.id).subscribe(res =>{
+      if(res && res.message === "coffee removed!"){
+        console.log("result: " + res.message)
+        this.showAlert("Coffee removed!");
+      }else{
+        this.showAlert("Error: failed to add coffee!");
+      }
+      //setTimeout(() => window.location.reload(), 2000);
+    });
   }
-
 
   //===========================================
   //onClick functions
@@ -105,7 +131,8 @@ export class CoffeesComponent implements OnInit {
     this.open(content);
   }
 
-  onRemoveClick(){
+  onRemoveClick(id: string){
+    this.id = id;
     this.removeCoffee();
   }
 
@@ -126,9 +153,9 @@ export class CoffeesComponent implements OnInit {
     this.modalRef = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
     this.modalRef.result.then((result) => {
       if(this.modalAction === "Save"){
-        this.showAlert("coffee added!");
+        //this.showAlert("coffee added!");
       }else if(this.modalAction === "Edit"){
-        this.showAlert("coffee edited!");
+        //this.showAlert("coffee edited!");
       }
     });
   }
