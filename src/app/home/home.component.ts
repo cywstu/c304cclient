@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { HttpService } from "../http.service";
-import { Coffee } from "../models/Coffee";
-import { MethodCall } from '@angular/compiler';
+import { DataService } from "../DataService";
 
 @Component({
   selector: 'app-home',
@@ -9,41 +8,11 @@ import { MethodCall } from '@angular/compiler';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
+  message: string = "";
 
-  clickCounter: number = 0;
-  name: string = "namelol";
-
-  coffee: Coffee = {
-    _id: "3467qeusr7",
-    name: "coffee1",
-    desc: "this is coffee1",
-    addDate: new Date()
-  }
-
-  @Input() message: string;
-
-  coffees: Coffee[] = [this.coffee, this.coffee, this.coffee];
-
-  result: Object;
-
-
-  constructor(private http: HttpService) {}
+  constructor(private http: HttpService, private dataService: DataService) {}
 
   ngOnInit(): void {
-
-    this.http.method();
-    this.http.getCoffees().subscribe(data =>{
-      this.result = data;
-      console.log(this.result);
-    });
+      this.message = this.dataService.getToken();
   }
-
-  countClick():void{
-    this.clickCounter += 1;
-  }
-
-  onAddCoffee(newCoffee){
-    return this.http.addCoffee(newCoffee);
-  }
-
 }

@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import {Coffee} from "../models/Coffee";
 import {HttpService} from "../http.service";
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { DataService } from "../DataService";
 
 @Component({
   selector: 'app-coffees',
@@ -29,10 +30,14 @@ export class CoffeesComponent implements OnInit {
   modalAlertMessage: string = "";
   modalAction: string;
 
-  constructor(private httpService: HttpService, private modalService: NgbModal) { }
+  message: string = "null";
+
+  constructor(private httpService: HttpService, private modalService: NgbModal, private dataService: DataService) { }
 
   ngOnInit(): void {
     this.getCoffee();
+
+    this.message = this.dataService.getToken();
   }
 
   getCoffee(){
