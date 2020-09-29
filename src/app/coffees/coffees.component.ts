@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {Coffee} from "../models/Coffee";
-import {HttpService} from "../http.service";
+import { Coffee } from "../models/Coffee";
+import { HttpService } from "../http.service";
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from "../DataService";
 
@@ -13,51 +13,105 @@ export class CoffeesComponent implements OnInit {
 
   apiAddress: string = "https://c304coffee.herokuapp.com";
   coffees: Coffee[];
+  result: any;
 
   //alert
   alertMessage: string = "";
   alertShow: boolean = false;
 
   //coffee data
+  id: string;
   name: string;
   desc: string;
-  image: any;
+  imagePath: string;
+  imageUrl: any;
+  image: File;
 
   //modal
-  closeResult = "nothing";
   modalRef: any;
   modalAlertShow: boolean = false;
   modalAlertMessage: string = "";
   modalAction: string;
 
-  message: string = "null";
+  isLoggedIn: boolean;
 
   constructor(private httpService: HttpService, private modalService: NgbModal, private dataService: DataService) { }
 
   ngOnInit(): void {
     this.getCoffee();
-
-    this.message = this.dataService.getToken();
+    this.isLoggedIn = this.dataService.isLoggedIn();
   }
 
+  //===========================================
+  //api functions
+  //===========================================
   getCoffee(){
     this.httpService.getCoffees().subscribe(res =>{
       this.coffees = res;
     });
   }
 
+  addCoffee(){
+    //stuff
+    const newCoffee: Coffee = {
+      _id: "",
+      name: this.name,
+      desc: this.desc,
+      addDate: new Date(),
+      image: this.imageUrl
+    };
+    this.alertMessage = newCoffee.name;
+
+    console.log("prepare to add");
+    this.httpService.addCoffee(newCoffee).subscribe(res =>{
+      this.result = res;
+      this.showModalAlert("result: " + this.result.message);
+      //clean up
+      console.log("finish adding");
+      console.log("res: " + this.result);
+      console.log("res.message: " + this.result.message);
+      this.closeModal();
+      setTimeout(() => window.location.reload(), 2000);
+    });
+    
+  }
+
+  editCoffee(){
+    //
+    this.closeModal();
+    setTimeout(() => window.location.reload(), 2000);
+  }
+
+  removeCoffee(){
+    this.showAlert("Coffee: " + this.id + " has been removed!");
+    setTimeout(() => window.location.reload(), 2000);
+  }
+
+
+  //===========================================
+  //onClick functions
+  //===========================================
   onAddClick(content){
     this.modalAction = "Save";
     this.open(content);
   }
 
-  onEditClick(content, name:string, desc:string){
+  onEditClick(content, id:string, name:string, desc:string){
     this.modalAction = "Edit";
-    this.name = name;
+    this.id = id;
+    this.name = name.replace(/_/g, " ");
     this.desc = desc;
+    this.imageUrl = this.apiAddress + "/coffees/" + name + "/image";
     this.open(content);
   }
 
+  onRemoveClick(){
+    this.removeCoffee();
+  }
+
+  //===========================================
+  // modal
+  //===========================================
   getModalTitle(): string{
     if(this.modalAction === "Save"){
       return "Add a new coffee";
@@ -68,32 +122,18 @@ export class CoffeesComponent implements OnInit {
     }
   }
 
-  onRemoveClick(id: string){
-    this.showAlert("Coffee: " + id + " has been removed!");
-    //this.httpService.getCoffees().subscribe(res =>{
-    //  this.coffees = res;
-      setTimeout(() => window.location.reload(), 2000)
-    //});
-    
-  }
-
-  showAlert(message: string){
-    this.alertMessage = message;
-    this.alertShow = true;
-  }
-
-  //alert functions
-  closeAlert() {
-    this.alertShow = false;
-  }
-
-  //modal
   open(content) {
     this.modalRef = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
     this.modalRef.result.then((result) => {
-      this.closeResult = "Closed with: " + this.name;
+      if(this.modalAction === "Save"){
+        this.showAlert("coffee added!");
+      }else if(this.modalAction === "Edit"){
+        this.showAlert("coffee edited!");
+      }
     });
   }
+
+  //modal alert
   showModalAlert(message: string){
     this.modalAlertMessage = message;
     this.modalAlertShow = true;
@@ -109,23 +149,62 @@ export class CoffeesComponent implements OnInit {
       this.showModalAlert("Warning: Coffee Name cannot be null");
     }else if(this.desc == null || this.desc === ""){
       this.showModalAlert("Warning: Description cannot be null");
-    }else if(this.image == null || this.image === ""){
+    }else if(this.imageUrl == null || this.imageUrl === ""){
       this.showModalAlert("Warning: Image cannot be null");
     }else{
       if(this.modalAction === "Save"){
-        //add
-        this.closeModal();
+        this.showModalAlert("adding coffee, please wait...");
+        this.addCoffee();
       }else if(this.modalAction === "Edit"){
-        //edit
-        this.closeModal();
+        this.showModalAlert("editing coffee, please wait...");
+        this.editCoffee();
       }
     }
   }
 
   closeModal(){
     this.closeModalAlert();
+    this.id = null;
     this.name = null;
     this.desc = null;
+    this.imagePath = null;
+    this.imageUrl = null;
+    this.image = null;
     this.modalRef.close();
+  }
+
+  onImageAdd(fileData){
+    this.image = fileData[0];
+
+    let files = fileData;
+    if(!files || files.length === 0){
+      this.showModalAlert("Error: file not available");
+      return;
+    }
+
+    let mimeType = files[0].type;
+    if(mimeType.match(/image\/*/) == null){
+      this.showModalAlert("Error: only image file allowed");
+      return;
+    }
+
+    let reader = new FileReader();
+    this.imagePath = files;
+    reader.readAsDataURL(files[0]);
+    reader.onload = (_event) =>{
+      this.imageUrl = reader.result;
+    }
+  }
+
+  //===========================================
+  // alert
+  //===========================================
+  showAlert(message: string){
+    this.alertMessage = message;
+    this.alertShow = true;
+  }
+
+  closeAlert() {
+    this.alertShow = false;
   }
 }

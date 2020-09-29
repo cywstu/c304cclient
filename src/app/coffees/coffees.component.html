@@ -1,10 +1,9 @@
-{{ message }}
 <table>
     <td>
         <h1>Our Coffees:</h1>
     </td>
     <td class="tdAddButton">
-        <span (click)="onAddClick(content)" class="spanAdd">+</span>
+        <span *ngIf="isLoggedIn" (click)="onAddClick(content)" class="spanAdd">+</span>
     </td>
 </table>
 
@@ -18,8 +17,8 @@
                 <h2>{{ c.name }}</h2>
             </td>
             <td class="tdButtons">
-                <span (click)="onEditClick(content, c.name, c.desc)" class="spanEdit">Edit</span>
-                <span (click)="onRemoveClick(c._id)" class="spanRemove">X</span>
+                <span *ngIf="isLoggedIn" (click)="onEditClick(content, c._id, c.name, c.desc)" class="spanEdit">Edit</span>
+                <span *ngIf="isLoggedIn" (click)="onRemoveClick(c._id)" class="spanRemove">X</span>
             </td>
         </tr>
         <tr>
@@ -53,7 +52,8 @@
                 <input class="form-control" placeholder="this is a coffee" name="desc" [(ngModel)]="desc">
                 <br />
                 <label>Image</label>
-                <input class="form-control" placeholder="img" name="img">
+                <input class="form-control" type="file" name="image" accept="image/*" #file (change)="onImageAdd(file.files)">
+                <img class="preview" [src]="imageUrl" *ngIf="imageUrl">
             </div>
         </form>
         <div *ngIf="modalAlertShow" class="modalAlert">
@@ -64,5 +64,3 @@
       <button type="button" class="btn btn-outline-dark" (click)="submitForm()">{{ modalAction }}</button>
     </div>
 </ng-template>
-  
-<pre>{{ closeResult }}</pre>

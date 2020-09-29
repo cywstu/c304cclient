@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
 
-import { Coffee } from "./models/coffee";
+import { Coffee } from "./models/Coffee";
+import { User } from "./models/User";
+import { TokenMessage } from "./models/TokenMessage";
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -20,6 +22,7 @@ export class HttpService {
   addUrl:string = this.serverUrl + "/add";
   editUrl:string = this.serverUrl + "/edit";
   removeUrl:string = this.serverUrl + "/remove";
+  loginUrl:string = this.serverUrl + "/login";
   //coffeeUrl:string = ;
 
   constructor(private http: HttpClient) { }
@@ -36,12 +39,8 @@ export class HttpService {
 
   }
 
-  login(){
-
-  }
-
-  logout(){
-
+  login(user: User): Observable<TokenMessage>{
+    return this.http.post<TokenMessage>(this.loginUrl, user, httpOptions);
   }
 
   addCoffee(coffee: Coffee){
@@ -57,4 +56,5 @@ export class HttpService {
     const url = this.removeUrl + "/" + coffee._id;
     return this.http.put(url, coffee, httpOptions);
   }
+
 }
